@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Chip 8</title>
+    <script src="./index.js" defer type="module"></script>
+    <link rel="stylesheet" href="./style.css"></link>
+</head>
+<body>
+    <h1>Chip 8</h1>
+    <section id="layout">
+    <div id="screen"></div>
+    <div id="ip-pc">
+        <table>
+            <thead>
+                <tr>
+                    <th>Reg</th>
+                    <th>Hex</th>
+                    <th>Base10</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="pc-row">
+                    <td class="register-name">PC</td>
+                    <td class="hex" >0x0000</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr id="ip-row">
+                    <td class="register-name">I</td>
+                    <td class="hex">0x0000</td>
+                    <td class="base10">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="registers">
+        <table>
+            <thead>
+                <tr>
+                    <th>Reg</th>
+                    <th>Binary</th>
+                    <th>Hex</th>
+                    <th>Base10</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="register-name">V0</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V1</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V2</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V3</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V4</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V5</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V6</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V7</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V8</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">V0</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VA</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VB</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VC</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VD</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VE</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr>
+                    <td class="register-name">VF</td>
+                    <td class="binary">0b00000000</td>
+                    <td class="hex">0x00</td>
+                    <td class="base10">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="stack">
+        <table>
+            <thead>
+                <tr><th>Stack</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>&nbsp;</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+                <tr><td>0x000</td></tr>
+            </tbody>
+        </table>
+    </div>
+    </section>
+</body>
+</html>

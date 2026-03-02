@@ -1,0 +1,142 @@
+:root {
+    --br:8px;
+    --gradient: linear-gradient(130deg, #a1179b, #319197 76.05%, #23d5ab);
+    --gradient-animation: gradient 15s ease infinite; 
+    --grey: rgb(85, 83, 83);
+    --dark-grey: #242424;
+    --white:rgba(255, 255, 255, 0.87); 
+
+    --text-color: var(--white);
+    --bg-color: var(--dark-grey);
+
+
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+
+    color-scheme: dark;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    color: var(--white);
+    z-index:-1;
+    min-height: 100vh;
+}
+
+h1, h1 a  {
+    margin:0;
+    font-weight: bold;
+    font-size: 3.2rem;
+    line-height: 1.1;
+}
+
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+#screen {
+    --columns: 64;
+    --row: 32;
+    --cell-size: 1fr;
+    grid-area: screen;
+    border-radius: var(--br);
+    background: var(--gradient);
+    background-size: 200% 200%;
+    animation: var(--gradient-animation);
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(var(--columns), var(--cell-size));
+    grid-template-rows: repeat(var(--rows), var(--cell-size));
+}
+#screen > * {
+    height: var(--cell-size);
+}
+
+#screen > *.on {
+    mix-blend-mode: saturation;
+    background-color: hsl(0, 100%, 50%);
+}
+#screen > *:not(.on) {
+    background: hsla(0, 0%, 0%, 0.15);
+}
+#layout {
+    margin-inline:16px;
+    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(8,1fr);
+    grid-template-areas: 
+     "screen screen screen screen screen screen ip-pc stack"
+     "screen screen screen screen screen screen reg stack";
+}
+#registers {
+    grid-area: reg;
+}
+#ip-pc {
+    grid-area: ip-pc;
+}
+#stack {
+    grid-area: stack;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-radius: var(--br);
+  overflow:hidden;
+  border: 1px solid var(--text-color);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: monospace;
+}
+
+table th,
+table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--grey); 
+  text-align: right;
+}
+
+table thead th {
+  font-weight: 600;
+  color: var(--bg-color);
+  background: var(--text-color);
+  border-bottom: 2px solid var(--text-color);
+}
+
+table tbody tr.stack-pointer {
+  color: var(--text-color);
+  background: var(--grey);
+}
+
+table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.base10 {
+    text-align:right;
+}
+
+
