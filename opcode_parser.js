@@ -1,5 +1,7 @@
 // @ts-check
 
+import { assert_int_in_range } from "./assert.js";
+
 export const OP_CODES = {
   /**
     0NNN
@@ -125,11 +127,19 @@ Set delay timer = Vx. Delay Timer is set equal to the value of Vx. */
   /** Fx18 - LD ST, Vx
 Set sound timer = Vx. Sound Timer is set equal to the value of Vx. */
   LD7: 29,
+  /** Fx55
+   * For FX55, the value of each variable register from V0 to VX inclusive (if X is 0, then only V0) will be stored in successive memory addresses, starting with the one that’s stored in I. V0 will be stored at the address in I, V1 will be stored in I + 1, and so on, until VX is stored in I + X.
+   * */
+  LD8: 30,
+  /** Fx65 */
+  LD9: 31,
   /** Fx1E - ADD I, Vx
 Set I = I + Vx. The values of I and Vx are added, and the results are stored in I */
-  /** Fx65 - 
-  LD8: 30, 
-  ADD3: 31,
+  ADD3: 32,
+  /** Fx33 - takes the number in VX (which is one byte, so it can be any number from 0 to 255)
+   * and converts it to three decimal digits,
+   * storing these digits in memory at the address in the index register I. */
+  LD10: 33,
   /** Noop */
   UNK: -1,
 };
@@ -160,7 +170,6 @@ export function parse_opcode(u16) {
     case 4:
       return OP_CODES.SNE;
     case 5:
-      // TODO(marcus): maybe collapse with SE. not sure
       return OP_CODES.SE2;
     case 6:
       return OP_CODES.LD;
@@ -187,6 +196,8 @@ export function parse_opcode(u16) {
           return OP_CODES.SUBN;
         case 0xe:
           return OP_CODES.SHL;
+        default:
+          return OP_CODES.UNK;
       }
     }
     case 9:
@@ -199,51 +210,56 @@ export function parse_opcode(u16) {
       return OP_CODES.RND;
     case 0xd:
       return OP_CODES.DRW;
-    case 0xe:
-      {
-        const bottom_byte = rest & 0xff;
-        switch (bottom_byte) {
-          case 0x9e:
-            return OP_CODES.SKP;
-          case 0xa1:
-            return OP_CODES.SKNP;
-          default:
-            break;
-        }
+    case 0xe: {
+      const bottom_byte = rest & 0xff;
+      switch (bottom_byte) {
+        case 0x9e:
+          return OP_CODES.SKP;
+        case 0xa1:
+          return OP_CODES.SKNP;
+        default:
+          return OP_CODES.UNK;
       }
-      break;
-    case 0xf:
-      {
-        const bottom_byte = rest & 0xff;
-        switch (bottom_byte) {
-          case 0x07:
-            return OP_CODES.LD4;
-          case 0x0a:
-            return OP_CODES.LD5;
-          case 0x15:
-            return OP_CODES.LD6;
-          case 0x18:
-            return OP_CODES.LD7;
-          case 0x1e:
-            return OP_CODES.ADD3;
-          default:
-            break;
-        }
+    }
+    case 0xf: {
+      const bottom_byte = rest & 0xff;
+      switch (bottom_byte) {
+        case 0x1e:
+          return OP_CODES.ADD3;
+        case 0x07:
+          return OP_CODES.LD4;
+        case 0x0a:
+          return OP_CODES.LD5;
+        case 0x15:
+          return OP_CODES.LD6;
+        case 0x18:
+          return OP_CODES.LD7;
+        case 0x55:
+          return OP_CODES.LD8;
+        case 0x65:
+          return OP_CODES.LD9;
+        case 0x33:
+          return OP_CODES.LD10;
+        default:
+          return OP_CODES.UNK;
       }
-      break;
+    }
     default:
-      break;
+      return OP_CODES.UNK;
   }
-  console.error(`Unsupported opcode 0x${u16.toString(16)}`);
-  return OP_CODES.UKN;
 }
 
 /** @param {number} opcode_enum
  * @returns {string}
  * */
 export function formatOpcodeEnum(opcode_enum) {
-  return (
-    Object.entries(OP_CODES).find((entry) => entry[1] === opcode_enum)?.[0] ??
-    "UKN"
-  );
+  assert_int_in_range(opcode_enum, -1, Object.entries(OP_CODES).length - 1);
+
+  var opcode_key = Object.entries(OP_CODES).find(
+    ([_, val]) => val === opcode_enum,
+  )?.[0];
+  if (!opcode_key) {
+    throw new Error(`invalid opcode_enum value ${opcode_enum}`);
+  }
+  return opcode_key;
 }

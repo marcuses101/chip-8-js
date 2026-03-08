@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="./style.css"></link>
 </head>
 <body>
-    <h1>Chip 8</h1>
-    <section id="layout">
+    <main id="layout">
     <div id="screen"></div>
     <div id="ip-pc">
         <table>
@@ -17,7 +16,7 @@
                 <tr>
                     <th>Reg</th>
                     <th>Hex</th>
-                    <th>Base10</th>
+                    <th>Dec</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,6 +30,16 @@
                     <td class="hex">0x0000</td>
                     <td class="base10">0</td>
                 </tr>
+                <tr id="delay-timer-row">
+                    <td class="register-name">DT</td>
+                    <td class="hex">0x0000</td>
+                    <td class="base10">0</td>
+                </tr>
+                <tr id="sound-timer-row">
+                    <td class="register-name">ST</td>
+                    <td class="hex">0x0000</td>
+                    <td class="base10">0</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -41,7 +50,7 @@
                     <th>Reg</th>
                     <th>Binary</th>
                     <th>Hex</th>
-                    <th>Base10</th>
+                    <th>Dec</th>
                 </tr>
             </thead>
             <tbody>
@@ -170,6 +179,9 @@
             </tbody>
         </table>
     </div>
-    </section>
+    <div id="program">
+        <code><pre></pre></code>
+    </div>
+    </main>
 </body>
 </html>

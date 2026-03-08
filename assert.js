@@ -1,5 +1,10 @@
 // @ts-check
-import { formatU16Hex, formatU8Binary, formatU8Hex } from "./utils.js";
+import {
+  formatU16Binary,
+  formatU16Hex,
+  formatU8Binary,
+  formatU8Hex,
+} from "./utils.js";
 
 /**
  * @param {boolean} expression
@@ -23,9 +28,9 @@ export function assert_equal(a, b) {
  * @param {any} a
  * @param {any} b
  * */
-export function assert_equal_binary(a, b) {
-  assert_uint8(a);
-  assert_uint8(b);
+export function assert_u8_equal_binary(a, b) {
+  assert_u8(a);
+  assert_u8(b);
   const message = `Expected ${formatU8Binary(a)} === ${formatU8Binary(b)}`;
   assert(a === b, message);
 }
@@ -45,6 +50,17 @@ export function assert_u8_equal_hex(a, b) {
  * */
 export function assert_u16_equal_hex(a, b) {
   const message = `Expected ${formatU16Hex(a)} === ${formatU16Hex(b)}`;
+  assert(a === b, message);
+}
+
+/**
+ * @param {any} a
+ * @param {any} b
+ * */
+export function assert_u16_equal_binary(a, b) {
+  assert_u16(a);
+  assert_u16(b);
+  const message = `Expected ${formatU16Binary(a)} === ${formatU16Binary(b)}`;
   assert(a === b, message);
 }
 
@@ -76,7 +92,14 @@ export function assert_address(num) {
  * @param {number} address
  * */
 export function assert_program_counter(chip8, address) {
-  assert_u16_equal_hex(chip8.program_counter.get(), address);
+  assert(
+    chip8.program_counter.get() % 2 === 0,
+    "program counter should always be even",
+  );
+  assert_u16(chip8.program_counter.get());
+  assert_u16(address);
+  const message = `Expected program_counter = ${formatU16Hex(address)}, Actually = ${formatU16Hex(chip8.program_counter.get())}`;
+  assert(chip8.program_counter.get() == address, message);
 }
 
 /** @param {any} num */
@@ -85,12 +108,12 @@ export function assert_register_index(num) {
 }
 
 /** @param {any} num */
-export function assert_uint8(num) {
+export function assert_u8(num) {
   assert_int_in_range(num, 0, 0xff);
 }
 
 /** @param {number} num */
-export function assert_uint16(num) {
+export function assert_u16(num) {
   assert_int_in_range(num, 0, 0xffff);
 }
 

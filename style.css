@@ -80,13 +80,17 @@ h1, h1 a  {
     background: hsla(0, 0%, 0%, 0.15);
 }
 #layout {
+    margin-top: 16px;
     margin-inline:16px;
     gap: 16px;
     display: grid;
+    height:80vh;
     grid-template-columns: repeat(8,1fr);
+    grid-template-columns: repeat(3,1fr);
     grid-template-areas: 
      "screen screen screen screen screen screen ip-pc stack"
-     "screen screen screen screen screen screen reg stack";
+     "screen screen screen screen screen screen reg   stack"
+     "prog   prog   prog   prog   prog   prog   reg   stack";
 }
 #registers {
     grid-area: reg;
@@ -96,6 +100,11 @@ h1, h1 a  {
 }
 #stack {
     grid-area: stack;
+}
+#program {
+    grid-area: prog;
+    height: 25vh;
+    overflow:auto;
 }
 
 

@@ -125,11 +125,17 @@ Set delay timer = Vx. Delay Timer is set equal to the value of Vx. */
   /** Fx18 - LD ST, Vx
 Set sound timer = Vx. Sound Timer is set equal to the value of Vx. */
   LD7: 29,
+  /** Fx55 - LD Vx  set memory starting at I to values V0 - Vx inclusive*/
+  LD8: 30,
+  /** Fx55 - LD Vx  load values at I into V0 - Vx inclusive*/
+  LD9: 31,
+
+  /* Fx33 - LD Vx store the decimal representation of digits of value of Vx
+   * in to sequential memory starting at I*/
+  LD10: 32,
   /** Fx1E - ADD I, Vx
 Set I = I + Vx. The values of I and Vx are added, and the results are stored in I */
-  /** Fx65 - 
-  LD8: 30, 
-  ADD3: 31,
+  ADD3: 33,
   /** Noop */
   UNK: -1,
 };
@@ -226,6 +232,8 @@ export function parse_opcode(u16) {
             return OP_CODES.LD7;
           case 0x1e:
             return OP_CODES.ADD3;
+          case 0x33:
+            return OP_CODES.LD10;
           default:
             break;
         }

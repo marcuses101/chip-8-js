@@ -17,6 +17,8 @@ export const BYTES_PER_ROW = 8;
  * @property {Uint8Array} frame_buffer
  * @property {Uint8Array} memory
  * @property {import("./utils.js").U16} program_counter
+ * @property {import("./utils.js").U16} keyboard
+ * @property {import("./utils.js").U16} previous_keyboard
  */
 
 /**
@@ -34,5 +36,7 @@ export function buildChip8() {
     frame_buffer: new Uint8Array(BYTES_PER_ROW * SCREEN_HEIGHT),
     memory: new Uint8Array(4096),
     program_counter: buildU16(),
+    keyboard: buildU16(),
+    previous_keyboard: buildU16(),
   };
 }

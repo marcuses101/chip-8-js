@@ -1,0 +1,39 @@
+const PROGRAM_2 = `
+00E0
+6000
+6100
+A21E
+220C
+1200
+D014
+7004
+303F
+120C
+6000
+7104
+311F
+120C
+00EE
+F020
+F020`.replace(/\s/g, "");
+const PROGRAM = `
+00E0
+6000
+6100
+A300
+220E
+1200
+D014
+7004
+303F
+120E
+6000
+7104
+311F
+120E
+00EE
+F020
+F020
+`.replace(/\s/g, "");
+
+export const MAZE_PROGRAM = Uint8Array.fromHex(PROGRAM_2);

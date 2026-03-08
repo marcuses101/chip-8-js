@@ -1,41 +1,12 @@
-// @ts-check
-
-export const OP_CODES = {
-  /**
-    0NNN
-    Jump to a machine code routine at nnn. This instruction is only used on the old computers on which Chip-8
-    was originally implemented. It is ignored by modern interpreters. This will not be implemented.
-  */
-  SYS: 0,
-  /** 00E0 - CLS
-Clear the display.
-    */
-  CLS: 1,
-  /**
-    00EE - RET
-Return from a subroutine.The interpreter sets the program counter to the address at the top of the stack,
-then subtracts 1 from the stack pointer. */
-  RET: 2,
-  /** 1nnn - JP addr
-Jump to location nnn. The interpreter sets the program counter to nnn. */
-  JP: 3,
-  /** 2nnn - CALL addr
-Call subroutine at nnn. The interpreter increments the stack pointer, then puts the current PC on the top
-of the stack. The PC is then set to nnn. */
-  CALL: 4,
-  /** 3xkk - SE Vx, byte
-Skip next instruction if Vx = kk. The interpreter compares register Vx to kk, and if they are equal,
-increments the program counter by 2. */
-  SE: 5,
-  /** 4xkk - SNE Vx, byte
-Skip next instruction if Vx != kk. The interpreter compares register Vx to kk, and if they are not equal,
-increments the program counter by 2.*/
-  SNE: 6,
-
-  /** 5xy0 - SE2 Vx, Vy
-Skip next instruction if Vx = Vy. The interpreter compares register Vx to register Vy, and if they are equal,
-increments the program counter by 2. */
-  SE2: 7,
+# Reference Instructions
+# SYS - 0NNN - jump to nnn deprecated
+# CLS - 00E0 - Clear the display.
+# RET - 00EE - pop stack, set addr
+# JP  - 1nnn - Jump to location nnn
+# CALL- 2nnn - Call subroutine at nnn
+# SE  - 3xkk - Vx, byte - Skip next instruction if Vx = kk 
+# SNE - 4xkk - Vx, byte - Skip next instruction if Vx != kk
+# SE2 - 5xy0  - Vx, Vy, Skip next instruction if Vx = Vy. 
   /** 6xkk - LD Vx, byte
 Set Vx = kk. The interpreter puts the value kk into register Vx. */
   LD: 8,
@@ -127,123 +98,6 @@ Set sound timer = Vx. Sound Timer is set equal to the value of Vx. */
   LD7: 29,
   /** Fx1E - ADD I, Vx
 Set I = I + Vx. The values of I and Vx are added, and the results are stored in I */
-  /** Fx65 - 
-  LD8: 30, 
-  ADD3: 31,
+  ADD3: 30,
   /** Noop */
-  UNK: -1,
-};
-
-/**
- * @param {number} u16
- * @returns {number} */
-export function parse_opcode(u16) {
-  const top_nibble = u16 >> 12;
-  const rest = u16 & 0x0fff;
-  switch (top_nibble) {
-    case 0: {
-      switch (rest) {
-        case 0x0e0:
-          return OP_CODES.CLS;
-        case 0x0ee:
-          return OP_CODES.RET;
-        default:
-          return OP_CODES.SYS;
-      }
-    }
-    case 1:
-      return OP_CODES.JP;
-    case 2:
-      return OP_CODES.CALL;
-    case 3:
-      return OP_CODES.SE;
-    case 4:
-      return OP_CODES.SNE;
-    case 5:
-      // TODO(marcus): maybe collapse with SE. not sure
-      return OP_CODES.SE2;
-    case 6:
-      return OP_CODES.LD;
-    case 7:
-      return OP_CODES.ADD;
-    case 8: {
-      const bottom_nibble = u16 & 0x000f;
-      switch (bottom_nibble) {
-        case 0:
-          return OP_CODES.LD2;
-        case 1:
-          return OP_CODES.OR;
-        case 2:
-          return OP_CODES.AND;
-        case 3:
-          return OP_CODES.XOR;
-        case 4:
-          return OP_CODES.ADD2;
-        case 5:
-          return OP_CODES.SUB;
-        case 6:
-          return OP_CODES.SHR;
-        case 7:
-          return OP_CODES.SUBN;
-        case 0xe:
-          return OP_CODES.SHL;
-      }
-    }
-    case 9:
-      return OP_CODES.SNE2;
-    case 0xa:
-      return OP_CODES.LD3;
-    case 0xb:
-      return OP_CODES.JP2;
-    case 0xc:
-      return OP_CODES.RND;
-    case 0xd:
-      return OP_CODES.DRW;
-    case 0xe:
-      {
-        const bottom_byte = rest & 0xff;
-        switch (bottom_byte) {
-          case 0x9e:
-            return OP_CODES.SKP;
-          case 0xa1:
-            return OP_CODES.SKNP;
-          default:
-            break;
-        }
-      }
-      break;
-    case 0xf:
-      {
-        const bottom_byte = rest & 0xff;
-        switch (bottom_byte) {
-          case 0x07:
-            return OP_CODES.LD4;
-          case 0x0a:
-            return OP_CODES.LD5;
-          case 0x15:
-            return OP_CODES.LD6;
-          case 0x18:
-            return OP_CODES.LD7;
-          case 0x1e:
-            return OP_CODES.ADD3;
-          default:
-            break;
-        }
-      }
-      break;
-    default:
-      break;
-  }
-  console.error(`Unsupported opcode 0x${u16.toString(16)}`);
-  return OP_CODES.UKN;
-}
-
-/** @param {number} opcode_enum
- * @returns {string}
- * */
-export function formatOpcodeEnum(opcode_enum) {
-  return (
-    Object.entries(OP_CODES).find((entry) => entry[1] === opcode_enum)?.[0] ??
-    "UKN"
-  );
-}
+  UNK: 31,
