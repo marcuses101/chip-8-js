@@ -1,6 +1,6 @@
 // @ts-check
 
-import { assert_int_in_range } from "./assert.js";
+import { assert_int_in_range } from "./utils/assert.js";
 
 export const OP_CODES = {
   /**
@@ -128,7 +128,10 @@ Set delay timer = Vx. Delay Timer is set equal to the value of Vx. */
 Set sound timer = Vx. Sound Timer is set equal to the value of Vx. */
   LD7: 29,
   /** Fx55
-   * For FX55, the value of each variable register from V0 to VX inclusive (if X is 0, then only V0) will be stored in successive memory addresses, starting with the one that’s stored in I. V0 will be stored at the address in I, V1 will be stored in I + 1, and so on, until VX is stored in I + X.
+   * For FX55, the value of each variable register
+   * from V0 to VX inclusive (if X is 0, then only V0) will be stored in successive memory addresses,
+   * starting with the one that’s stored in I.
+   * V0 will be stored at the address in I, V1 will be stored in I + 1, and so on, until VX is stored in I + X.
    * */
   LD8: 30,
   /** Fx65 */
@@ -139,9 +142,40 @@ Set I = I + Vx. The values of I and Vx are added, and the results are stored in 
   /** Fx33 - takes the number in VX (which is one byte, so it can be any number from 0 to 255)
    * and converts it to three decimal digits,
    * storing these digits in memory at the address in the index register I. */
-  LD10: 33,
+  BCD: 33,
+  /**
+   * Fx29 - LD I set I to the sprite of the xchar x
+   * */
+  SPR: 34,
   /** Noop */
   UNK: -1,
+};
+
+// TODO: fill this properly
+export const OPCODE_INFO = {
+  [OP_CODES.SYS]: { pattern: "0NNN", description: "noop" },
+  [OP_CODES.LD]: { pattern: "6xKK", description: "Vx = KK" },
+  [OP_CODES.LD2]: { pattern: "8XY0", description: "Vx = Vy" },
+  [OP_CODES.LD3]: { pattern: "ANNN", description: "I = NNN" },
+  [OP_CODES.LD4]: { pattern: "Fx07", description: "Vx = DT" },
+  [OP_CODES.LD5]: { pattern: "Fx0A", description: "Vx = keypress" },
+  [OP_CODES.LD6]: { pattern: "Fx15", description: "DT = Vx" },
+  [OP_CODES.LD7]: { pattern: "Fx18", description: "ST = Vx" },
+  [OP_CODES.LD8]: { pattern: "Fx55", description: "mem[I0-Ix] = V[0-X]" },
+  [OP_CODES.LD9]: { pattern: "Fx65", description: "V[0-X] = mem[I0-Ix]" },
+  [OP_CODES.SPR]: { pattern: "Fx29", description: "I=sprite(Vx)" },
+  [OP_CODES.CLS]: { pattern: "00E0", description: "CLR SCRN" },
+  [OP_CODES.RET]: { pattern: "00EE", description: "PC = ST--" },
+  [OP_CODES.JP]: { pattern: "1NNN", description: "PC = NNN" },
+  [OP_CODES.CALL]: { pattern: "2NNN", description: "STK++ = ++PC" },
+  [OP_CODES.SE]: { pattern: "3XKK", description: "skip if Vx == KK" },
+  [OP_CODES.SNE]: { pattern: "4XKK", description: "skip if Vx != KK" },
+  [OP_CODES.SE2]: { pattern: "5XY0", description: "skip if Vx == Vy" },
+  [OP_CODES.ADD]: { pattern: "7XKK", description: "Vx += KK" },
+  [OP_CODES.ADD2]: { pattern: "8XY4", description: "Vx += Vy" },
+  [OP_CODES.ADD3]: { pattern: "FX1E", description: "I += Vx" },
+  [OP_CODES.BCD]: { pattern: "Fx33", description: "dec decode" },
+  [OP_CODES.DRW]: { pattern: "DXYN", description: "draw nlines (Dx,Dy)" },
 };
 
 /**
@@ -239,7 +273,9 @@ export function parse_opcode(u16) {
         case 0x65:
           return OP_CODES.LD9;
         case 0x33:
-          return OP_CODES.LD10;
+          return OP_CODES.BCD;
+        case 0x29:
+          return OP_CODES.SPR;
         default:
           return OP_CODES.UNK;
       }

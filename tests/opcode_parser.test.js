@@ -1,4 +1,4 @@
-import { assert_equal } from "../assert.js";
+import { assert_equal } from "../utils/assert.js";
 import { OP_CODES, parse_opcode, formatOpcodeEnum } from "../opcode_parser.js";
 
 //@ts-check
@@ -16,7 +16,8 @@ export function opcodes_ShouldParseAsExpected() {
     [0x71a0, OP_CODES.ADD],
     [0xd005, OP_CODES.DRW],
     [0xf31e, OP_CODES.ADD3],
-    [0xf133, OP_CODES.LD10],
+    [0xf133, OP_CODES.BCD],
+    [0xf329, OP_CODES.SPR],
   ];
   const failed = [];
   test_data.forEach(([input, expected_output]) => {

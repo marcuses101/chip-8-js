@@ -15,12 +15,24 @@ export function assert(expression, message) {
   throw new Error(message);
 }
 
+/** @param {string} char */
+export function assert_char(char) {
+  assert(
+    typeof char === "string" && char.length === 1,
+    `expected char, received "${char}"(${typeof char})`,
+  );
+}
+
 /**
  * @param {any} a
  * @param {any} b
+ * @param {string} optional_message
  * */
-export function assert_equal(a, b) {
-  const message = `Expected ${a} === ${b}`;
+export function assert_equal(a, b, optional_message = "") {
+  let message = `Expected ${a}(${typeof a}) === ${b}(${typeof b})`;
+  if (optional_message) {
+    message = `${message}; ${optional_message}`;
+  }
   assert(a === b, message);
 }
 
@@ -80,6 +92,16 @@ export function assert_int_in_range(num, start, end) {
     `input must be and int between ${range_start} and ${range_end}. Received: ${num}`,
   );
 }
+/**
+ * @param {number} a
+ * @param {number} b
+ */
+export function assert_less_than(a, b) {
+  assert(
+    Number.isSafeInteger(a) && Number.isSafeInteger(b) && a < b,
+    `a must be an integer less than b`,
+  );
+}
 
 /**
  * @param {any} num
@@ -88,7 +110,7 @@ export function assert_address(num) {
   assert_int_in_range(num, 0, 0xfff);
 }
 
-/** @param {import("./memory.js").Chip8} chip8
+/** @param {import("../chip8-core/chip8.js").Chip8} chip8
  * @param {number} address
  * */
 export function assert_program_counter(chip8, address) {
@@ -128,4 +150,15 @@ export function assert_instanceof(el, class_def) {
   throw new Error(
     `Expected ${el}(${typeof el}) to be instance of ${class_def?.name ?? "UNKNOWN"}`,
   );
+}
+
+/**
+ * @param {import("../assembler/tokenizer.js").Token} token_a
+ * @param {import("../assembler/tokenizer.js").Token} token_b
+ */
+export function assert_token_equal(token_a, token_b) {
+  assert_equal(token_a.start, token_b.start);
+  assert_equal(token_a.end, token_b.end);
+  assert_equal(token_a.token_type, token_b.token_type);
+  assert_equal(token_a.value, token_b.value);
 }

@@ -2,11 +2,15 @@
 import * as CHIP8_TESTS from "./tests/chip8.test.js";
 import * as KEYBOARD_TESTS from "./tests/keyboard.test.js";
 import * as PARSER_TESTS from "./tests/opcode_parser.test.js";
+import * as TOKENIZER_TESTS from "./tests/tokenizer.test.js";
+import * as ASSEMBLER_TESTS from "./tests/assembler.test.js";
 
 const test_modules = {
   KEYBOARD_TESTS,
   CHIP8_TESTS,
   PARSER_TESTS,
+  TOKENIZER_TESTS,
+  ASSEMBLER_TESTS,
 };
 
 export function runTests() {

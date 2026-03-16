@@ -34,11 +34,14 @@ export function init_sound_chip() {
   oscillator_node.start(audio_context.currentTime);
   // One-liner to resume playback when user interacted with the page.
   // TODO improve this
-  document.addEventListener("click", function () {
+  function resume_playback() {
     audio_context.resume().then(() => {
       console.log("Playback resumed successfully");
+      document.removeEventListener("click", resume_playback);
     });
-  });
+  }
+  document.addEventListener("click", resume_playback);
+
   return {
     previous_state: false,
     current_state: false,

@@ -4,21 +4,26 @@ import {
   assert_instanceof,
   assert_int_in_range,
   assert_u16,
-} from "./assert.js";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./memory.js";
-import { formatOpcodeEnum, parse_opcode } from "./opcode_parser.js";
+} from "./utils/assert.js";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./chip8-core/chip8.js";
+import {
+  formatOpcodeEnum,
+  OPCODE_INFO,
+  parse_opcode,
+} from "./opcode_parser.js";
+import { get_opcode } from "./operations.js";
 import { init_sound_chip, sound_off, sound_on } from "./sound_chip.js";
 import {
   buildU16,
   formatU16Hex,
   formatU8Binary,
   formatU8Hex,
-} from "./utils.js";
+} from "./utils/utils.js";
 
 const PIXEL_COUNT = SCREEN_WIDTH * SCREEN_HEIGHT;
 const FRAME_BUDGET_MS = 10;
 
-const STANDARD_KEYMAP = {
+export const STANDARD_KEYMAP = {
   0: 0,
   1: 1,
   2: 2,
@@ -35,6 +40,24 @@ const STANDARD_KEYMAP = {
   D: 0xd,
   E: 0xe,
   F: 0xf,
+};
+export const ALT_KEYMAP = {
+  1: 1,
+  2: 2,
+  3: 3,
+  Q: 4,
+  W: 5,
+  E: 6,
+  A: 7,
+  S: 8,
+  D: 9,
+  Z: 0xa,
+  X: 0,
+  C: 0xb,
+  4: 0xc,
+  R: 0xd,
+  F: 0xe,
+  V: 0xf,
 };
 
 /**
@@ -58,8 +81,10 @@ export function handle_keydown(current_keyboard_state, key_number) {
   return current_keyboard_state | bit_mask;
 }
 
-/** @returns {[import("./utils.js").U16, ()=>void]}*/
-export function init_keyboard() {
+/**
+ * @param {object} keymap
+ * @returns {[import("./utils/utils.js").U16, ()=>void]}*/
+export function init_keyboard(keymap = STANDARD_KEYMAP) {
   const keyboard_state = buildU16();
 
   /** @param {KeyboardEvent} e */
@@ -68,13 +93,19 @@ export function init_keyboard() {
       return;
     }
     const key = e.key.toUpperCase();
-    const number = STANDARD_KEYMAP[key];
+    const number = keymap[key];
+    console.debug("Key received: %s", key);
+    console.debug(
+      "Decoded: " + typeof number === "number" ? formatU8Hex(number) : "null",
+    );
     if (
       typeof number != "number" ||
       Number.isNaN(number) ||
       number < 0 ||
       number > 0xf
     ) {
+      console.debug("unsupported key: ", key);
+      console.debug(keymap);
       return;
     }
     if (e.type != "keyup" && e.type != "keydown") {
@@ -104,13 +135,14 @@ export function init_keyboard() {
  * @property {HTMLTableElement} registerTableEl
  * @property {HTMLTableElement} ipPcTableEl
  * @property {HTMLTableElement} stackTableEl
+ * @property {HTMLTableElement} instructionTableEl
  * @property {HTMLTableRowElement} ip_row
  * @property {HTMLTableRowElement} pc_row
  * @property {HTMLTableRowElement} sound_timer_row
  * @property {HTMLTableRowElement} delay_timer_row
  * @property {Uint8Array} previousFrame
  * @property {import("./sound_chip.js").SoundChip} sound_chip
- * @property {import("./utils.js").U16} keyboard
+ * @property {import("./utils/utils.js").U16} keyboard
  * @property {()=>void} keyboard_cleanup
  */
 
@@ -118,7 +150,7 @@ export function init_keyboard() {
  * @returns {UI}
  * */
 export function init_browser_ui() {
-  const [keyboard, keyboard_cleanup] = init_keyboard();
+  const [keyboard, keyboard_cleanup] = init_keyboard(ALT_KEYMAP);
   const chip8ScreenEl = document.getElementById("screen");
   assert_instanceof(chip8ScreenEl, HTMLDivElement);
   for (let i = 0; i < PIXEL_COUNT; i++) {
@@ -127,13 +159,18 @@ export function init_browser_ui() {
     chip8ScreenEl?.appendChild(child);
   }
   const registerTableEl = document.querySelector("#registers table");
-  assert_instanceof(chip8ScreenEl, HTMLDivElement);
+  assert_instanceof(registerTableEl, HTMLTableElement);
 
   const stackTableEl = document.querySelector("#stack table");
-  assert_instanceof(chip8ScreenEl, HTMLDivElement);
+  assert_instanceof(stackTableEl, HTMLTableElement);
 
   const ipPcTableEl = document.querySelector("#ip-pc table");
-  assert_instanceof(chip8ScreenEl, HTMLDivElement);
+  assert_instanceof(ipPcTableEl, HTMLTableElement);
+
+  const instructionTableEl = /** @type {HTMLTableElement} */ (
+    document.querySelector("#instruction table")
+  );
+  assert_instanceof(instructionTableEl, HTMLTableElement);
 
   const programSectionEl = document.querySelector("#program pre");
 
@@ -159,6 +196,7 @@ export function init_browser_ui() {
     stackTableEl,
     // @ts-ignore
     ipPcTableEl,
+    instructionTableEl,
     // @ts-ignore
     ip_row,
     // @ts-ignore
@@ -224,7 +262,7 @@ function update_row_3(row, value) {
 
 /**
  * @param {UI} ui
- * @param {import("./memory.js").Chip8} chip8
+ * @param {import("./chip8-core/chip8.js").Chip8} chip8
  */
 export function update_ui(chip8, ui) {
   const timestamp = performance.now();
@@ -242,9 +280,10 @@ export function update_ui(chip8, ui) {
     assert_instanceof(row, HTMLTableRowElement);
     update_row_3(row, val);
   });
+  const program_counter = chip8.program_counter.get();
 
   update_row_2(ui.ip_row, chip8.index_register.get());
-  update_row_2(ui.pc_row, chip8.program_counter.get());
+  update_row_2(ui.pc_row, program_counter);
   update_row_2(ui.sound_timer_row, chip8.sound_timer.get());
   update_row_2(ui.delay_timer_row, chip8.sound_timer.get());
 
@@ -252,7 +291,7 @@ export function update_ui(chip8, ui) {
   const stack_pointer_index = chip8.stack_pointer.get();
   const stackTableBody = ui.stackTableEl.querySelector("tbody");
   for (let i = 0; i < 16; i++) {
-    const row = stackTableBody?.children[16 - i];
+    const row = stackTableBody?.children[15 - i];
     assert_instanceof(row, HTMLTableRowElement);
     const is_stack_pointer = i === stack_pointer_index;
     // @ts-ignore
@@ -262,6 +301,20 @@ export function update_ui(chip8, ui) {
       ? "> " + formatU16Hex(chip8.stack[i])
       : formatU16Hex(chip8.stack[i]);
   }
+
+  const instructionBody = /** @type {HTMLElement} */ (
+    ui.instructionTableEl.querySelector("tbody")
+  );
+  assert_instanceof(instructionBody, HTMLElement);
+  const opcode = get_opcode(chip8);
+  const opcode_enum = parse_opcode(opcode);
+  instructionBody.children[0].children[0].innerText =
+    formatOpcodeEnum(opcode_enum);
+  instructionBody.children[1].children[0].innerText = formatU16Hex(opcode);
+  instructionBody.children[2].children[0].innerText =
+    OPCODE_INFO[opcode_enum]?.pattern ?? "UNKN";
+  instructionBody.children[3].children[0].innerText =
+    OPCODE_INFO[opcode_enum]?.description.slice(0, 16) ?? "unknown";
 
   // HANDLE SCREEN
   const cells = ui.chip8ScreenEl.children;

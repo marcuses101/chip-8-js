@@ -1,151 +1,281 @@
-:root {
-    --br:8px;
-    --gradient: linear-gradient(130deg, #a1179b, #319197 76.05%, #23d5ab);
-    --gradient-animation: gradient 15s ease infinite; 
-    --grey: rgb(85, 83, 83);
-    --dark-grey: #242424;
-    --white:rgba(255, 255, 255, 0.87); 
+@layer reset,theme,components,app;
 
-    --text-color: var(--white);
-    --bg-color: var(--dark-grey);
-
-
-    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
-
-    color-scheme: dark;
-    color: var(--text-color);
-    background-color: var(--bg-color);
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
-}
-
-body {
-    margin: 0;
-    color: var(--white);
-    z-index:-1;
-    min-height: 100vh;
-}
-
-h1, h1 a  {
-    margin:0;
-    font-weight: bold;
-    font-size: 3.2rem;
-    line-height: 1.1;
-}
-
-
-@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
+@layer reset {
+    /* Box sizing rules */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
     }
-    50% {
-        background-position: 100% 50%;
+
+    /* Prevent font size inflation */
+    html {
+      -moz-text-size-adjust: none;
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
     }
-    100% {
-        background-position: 0% 50%;
+
+    /* Remove default margin in favour of better control in authored CSS */
+    body, h1, h2, h3, h4, p,
+    figure, blockquote, dl, dd {
+      margin-block-start: 0;
+      margin-block-end: 0;
+    }
+
+    /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+    ul[role='list'],
+    ol[role='list'] {
+      list-style: none;
+    }
+
+    /* Set core body defaults */
+    body {
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Set shorter line heights on headings and interactive elements */
+    h1, h2, h3, h4,
+    button, input, label {
+      line-height: 1.1;
+    }
+
+    /* Balance text wrapping on headings */
+    h1, h2,
+    h3, h4 {
+      text-wrap: balance;
+    }
+
+    /* A elements that don't have a class get default styles */
+    a:not([class]) {
+      text-decoration-skip-ink: auto;
+      color: currentColor;
+    }
+
+    /* Make images easier to work with */
+    img,
+    picture {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* Inherit fonts for inputs and buttons */
+    input, button,
+    textarea, select {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    /* Make sure textareas without a rows attribute are not tiny */
+    textarea:not([rows]) {
+      min-height: 10em;
+    }
+
+    /* Anything that has been anchored to should have extra scroll margin */
+    :target {
+      scroll-margin-block: 5ex;
+    }
+}
+
+@layer theme {
+    :root {
+        --br:8px;
+        --gradient: linear-gradient(130deg, #a1179b, #319197 76.05%, #23d5ab);
+        --gradient-animation: gradient 15s ease infinite; 
+        --grey: rgb(85, 83, 83);
+        --dark-grey: #242424;
+        --white:rgba(255, 255, 255, 0.87); 
+
+        --text-color: var(--white);
+        --bg-color: var(--dark-grey);
+
+        /* SPACING */
+
+        --spacing-1: 4px;
+        --spacing-2: 8px;
+        --spacing-3: 8px;
+        --spacing-4: 16px;
+
+        font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 400;
+
+        color-scheme: dark;
+        color: var(--text-color);
+        background-color: var(--bg-color);
+
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        margin: 0;
+        color: var(--white);
+        z-index:-1;
+        box-sizing: border-box;
+    }
+
+    h1, h1 a  {
+        margin:0;
+        font-weight: bold;
+        font-size: 3.2rem;
+        line-height: 1.1;
+    }
+    button, input[type=submit] {
+        font-size: 16px;
+        padding: var(--spacing-2);
+        cursor: pointer;
+    }
+    section {
+        margin-block: var(--spacing-4);
+    }
+
+
+    @keyframes gradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    dialog {
+      border-radius: var(--br);
+      border: 1px solid var(--text-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-radius: var(--br);
+      overflow:hidden;
+      border: 1px solid var(--text-color);
+      font-size: 0.95rem;
+      line-height: 1.4;
+      font-family: monospace;
+    }
+
+    table th,
+    table td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--grey); 
+      text-align: right;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+      max-width: 16ch;
+    }
+
+    table thead th {
+      font-weight: 600;
+      color: var(--bg-color);
+      background: var(--text-color);
+      border-bottom: 2px solid var(--text-color);
+    }
+
+    table tbody tr.stack-pointer {
+      color: var(--text-color);
+      background: var(--grey);
+    }
+
+    table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+}
+
+@layer components {
+    .stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+}
+
+@layer app {
+    #screen {
+        --columns: 64;
+        --row: 32;
+        --cell-size: 1fr;
+        grid-area: screen;
+        border-radius: var(--br);
+        background: var(--gradient);
+        background-size: 200% 200%;
+        animation: var(--gradient-animation);
+        min-height: 50vh;
+        display: grid;
+        gap: 1px;
+        grid-template-columns: repeat(var(--columns), var(--cell-size));
+        grid-template-rows: repeat(var(--rows), var(--cell-size));
+    }
+    #screen > * {
+        height: var(--cell-size);
+    }
+
+    #screen > *.on {
+        mix-blend-mode: saturation;
+        background-color: hsl(0, 100%, 50%);
+    }
+    #screen > *:not(.on) {
+        background: hsla(0, 0%, 0%, 0.15);
+    }
+    #layout {
+        padding:16px;
+        height: 100vh;
+        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(8,1fr);
+        grid-template-rows: auto auto auto 1fr;
+        grid-template-areas: 
+         "screen screen screen screen screen screen ip-pc instr"
+         "screen screen screen screen screen screen reg   stack"
+         "control control control control control control reg   stack"
+         "prog   prog   prog   prog   prog   prog   reg   stack";
+    }
+    #registers {
+        grid-area: reg;
+    }
+    #ip-pc {
+        grid-area: ip-pc;
+    }
+    #stack {
+        grid-area: stack;
+    }
+    #program {
+        grid-area: prog;
+        overflow:auto;
+    }
+    #instruction {
+        grid-area: instr;
+    }
+    #controls {
+        grid-area: control;
+        height: fit-content;
+        line-height: 0;
+        display:flex;
+        flex-direction: row;
+        justify-content: center;
+        gap:4px;
+        & button {
+            width: 130px;
+            font-size: 16px;
+            padding: 8px;
+        }
+    }
+    .base10 {
+        text-align:right;
     }
 }
 
 
-#screen {
-    --columns: 64;
-    --row: 32;
-    --cell-size: 1fr;
-    grid-area: screen;
-    border-radius: var(--br);
-    background: var(--gradient);
-    background-size: 200% 200%;
-    animation: var(--gradient-animation);
-    display: grid;
-    gap: 1px;
-    grid-template-columns: repeat(var(--columns), var(--cell-size));
-    grid-template-rows: repeat(var(--rows), var(--cell-size));
-}
-#screen > * {
-    height: var(--cell-size);
-}
-
-#screen > *.on {
-    mix-blend-mode: saturation;
-    background-color: hsl(0, 100%, 50%);
-}
-#screen > *:not(.on) {
-    background: hsla(0, 0%, 0%, 0.15);
-}
-#layout {
-    margin-top: 16px;
-    margin-inline:16px;
-    gap: 16px;
-    display: grid;
-    height:80vh;
-    grid-template-columns: repeat(8,1fr);
-    grid-template-columns: repeat(3,1fr);
-    grid-template-areas: 
-     "screen screen screen screen screen screen ip-pc stack"
-     "screen screen screen screen screen screen reg   stack"
-     "prog   prog   prog   prog   prog   prog   reg   stack";
-}
-#registers {
-    grid-area: reg;
-}
-#ip-pc {
-    grid-area: ip-pc;
-}
-#stack {
-    grid-area: stack;
-}
-#program {
-    grid-area: prog;
-    height: 25vh;
-    overflow:auto;
-}
-
-
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-radius: var(--br);
-  overflow:hidden;
-  border: 1px solid var(--text-color);
-  font-size: 0.95rem;
-  line-height: 1.4;
-  font-family: monospace;
-}
-
-table th,
-table td {
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  vertical-align: middle;
-  border-bottom: 1px solid var(--grey); 
-  text-align: right;
-}
-
-table thead th {
-  font-weight: 600;
-  color: var(--bg-color);
-  background: var(--text-color);
-  border-bottom: 2px solid var(--text-color);
-}
-
-table tbody tr.stack-pointer {
-  color: var(--text-color);
-  background: var(--grey);
-}
-
-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.base10 {
-    text-align:right;
-}
 
 

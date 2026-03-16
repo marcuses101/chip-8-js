@@ -4,19 +4,19 @@ import {
   assert,
   assert_equal,
   assert_program_counter,
+  assert_register_index,
   assert_u16_equal_hex,
-  assert_u8,
   assert_u8_equal_binary,
   assert_u8_equal_hex,
-} from "../assert.js";
-import { buildChip8, BYTES_PER_ROW } from "../memory.js";
-import { OP_CODES } from "../opcode_parser.js";
+} from "../utils/assert.js";
 import {
-  DEFAULT_QUIRKS,
-  get_opcode,
-  handle_instruction,
-} from "../operations.js";
-import { random_u8 } from "../utils.js";
+  buildChip8,
+  BYTES_PER_ROW,
+  CHIP_8_QUIRKS,
+} from "../chip8-core/chip8.js";
+import { OP_CODES } from "../opcode_parser.js";
+import { get_opcode, handle_instruction } from "../operations.js";
+import { random_u8 } from "../utils/utils.js";
 
 export function ADD_ShouldHaveDesiredffect() {
   const chip8 = buildChip8();
@@ -90,10 +90,7 @@ export function DRW_ShouldWrapXOnByteBoundary() {
   chip8.registers[0] = 64; // will draw to x = 1
   chip8.registers[1] = 0; // will draw to y = 0
 
-  handle_instruction(chip8, 0xd011, random_u8, {
-    ...DEFAULT_QUIRKS,
-    clipping: true,
-  });
+  handle_instruction(chip8, 0xd011, random_u8);
   assert_u8_equal_binary(chip8.frame_buffer[0], 0xff);
   assert_u8_equal_binary(chip8.frame_buffer[8], 0);
 }
@@ -105,10 +102,7 @@ export function DRW_ShouldNotPartialWrapX() {
   chip8.registers[0] = 60; // will draw to x = 1
   chip8.registers[1] = 0; // will draw to y = 0
 
-  handle_instruction(chip8, 0xd011, random_u8, {
-    ...DEFAULT_QUIRKS,
-    clipping: true,
-  });
+  handle_instruction(chip8, 0xd011, random_u8);
   assert_u8_equal_binary(chip8.frame_buffer[0], 0);
   assert_u8_equal_binary(chip8.frame_buffer[7], 0x0f);
   assert_u8_equal_binary(chip8.frame_buffer[8], 0);
@@ -310,7 +304,7 @@ export function SHR_ShoulBehaveAsExpected() {
 Set Vx = Vx SHR 1. If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is
 divided by 2. */
 
-  const chip8 = buildChip8();
+  const chip8 = buildChip8({ ...CHIP_8_QUIRKS, shifting: true });
   chip8.registers[5] = 0b11110001;
   handle_instruction(chip8, 0x8516);
   assert_u8_equal_binary(chip8.registers[5], 0b01111000);
@@ -341,7 +335,7 @@ export function SHL_ShoulBehaveAsExpected() {
   /** 8xyE - SHL Vx {, Vy}
 Set Vx = Vx SHL 1. If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is
 multiplied by 2. */
-  const chip8 = buildChip8();
+  const chip8 = buildChip8({ ...CHIP_8_QUIRKS, shifting: true });
   chip8.registers[0] = 0b1000_0001;
 
   handle_instruction(chip8, 0x801e);
@@ -516,7 +510,7 @@ Set I = I + Vx. The values of I and Vx are added, and the results are stored in 
 }
 
 export function LD10_ShoulBehaveAsExpected() {
-  OP_CODES.LD10;
+  OP_CODES.BCD;
   const chip8 = buildChip8();
   chip8.registers[0] = 123;
   chip8.index_register.set(0x209);
@@ -527,6 +521,26 @@ export function LD10_ShoulBehaveAsExpected() {
   assert_equal(chip8.memory[0x20b], 3);
 
   assert_program_counter(chip8, 2);
+}
+
+export function LD11_ShoulBehaveAsExpected() {
+  const chip8 = buildChip8();
+  chip8.index_register.set(0x209);
+
+  chip8.registers[0] = 0;
+  handle_instruction(chip8, 0xf029);
+  assert_u16_equal_hex(chip8.index_register.get(), 0x000);
+  assert_program_counter(chip8, 2);
+
+  chip8.registers[0] = 1;
+  handle_instruction(chip8, 0xf029);
+  assert_u16_equal_hex(chip8.index_register.get(), 0x005);
+  assert_program_counter(chip8, 4);
+
+  chip8.registers[0] = 8;
+  handle_instruction(chip8, 0xf029);
+  assert_u16_equal_hex(chip8.index_register.get(), 5 * 8);
+  assert_program_counter(chip8, 6);
 }
 
 export function get_opcode_should_return_u16_at_pc() {

@@ -8,8 +8,31 @@
     <link rel="stylesheet" href="./style.css"></link>
 </head>
 <body>
+    <dialog id="rom-loader">
+        <h2>Load ROM</h2>
+        <form id="loader-form" method="dialog">
+            <section class="stack" id="rom-list">
+            </section>
+            <section class="stack">
+                <button 
+                    type="button" 
+                    command="close" 
+                    commandfor="rom-loader"
+                >
+                    Close
+                </button>
+            </section>
+        </form>
+    </dialog>
     <main id="layout">
     <div id="screen"></div>
+    <div id="controls">
+        <button command="show-modal" commandfor="rom-loader">LOAD</button>
+        <button id="control-play">PLAY</button>
+        <button id="control-pause">PAUSE</button>
+        <button id="control-step">STEP</button>
+        <button id="control-reset">RESET</button>
+    </div>
     <div id="ip-pc">
         <table>
             <thead>
@@ -109,7 +132,7 @@
                     <td class="base10">0</td>
                 </tr>
                 <tr>
-                    <td class="register-name">V0</td>
+                    <td class="register-name">V9</td>
                     <td class="binary">0b00000000</td>
                     <td class="hex">0x00</td>
                     <td class="base10">0</td>
@@ -153,13 +176,25 @@
             </tbody>
         </table>
     </div>
+    <div id="instruction">
+        <table>
+            <thead>
+                <tr><th>Instr</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>UNK</td></tr>
+                <tr><td>0x0000</td></tr>
+                <tr><td>0NNN</td></tr>
+                <tr><td>&nbsp</td></tr>
+            </tbody>
+        </table>
+    </div>
     <div id="stack">
         <table>
             <thead>
                 <tr><th>Stack</th></tr>
             </thead>
             <tbody>
-                <tr><td>&nbsp;</td></tr>
                 <tr><td>0x000</td></tr>
                 <tr><td>0x000</td></tr>
                 <tr><td>0x000</td></tr>
