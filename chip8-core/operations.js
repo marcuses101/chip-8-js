@@ -6,19 +6,16 @@ import {
   assert_register_index,
   assert_u16,
   assert_u8,
-} from "./utils/assert.js";
-import {
-  BYTES_PER_ROW,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from "./chip8-core/chip8.js";
-import { formatOpcodeEnum, OP_CODES, parse_opcode } from "./opcode_parser.js";
-import { clamp, formatU16Hex, random_u8 } from "./utils/utils.js";
+} from "../utils/assert.js";
+import { BYTES_PER_ROW, SCREEN_HEIGHT, SCREEN_WIDTH } from "./chip8.js";
+import { formatOpcodeEnum, decode_opcode } from "./opcode_parser.js";
+import { OP_CODES } from "./OP_CODES.js";
+import { clamp, formatU16Hex, random_u8 } from "../utils/utils.js";
 
 const SPRITES_BASE_ADDRESS = 0x000;
 
-/** @param {import("./chip8-core/chip8.js").Chip8} chip8 */
-export function get_opcode(chip8) {
+/** @param {import("./chip8.js").Chip8} chip8 */
+export function get_current_opcode(chip8) {
   const address = chip8.program_counter.get();
   const next_adress = address + 1;
   assert_address(address);
@@ -28,21 +25,21 @@ export function get_opcode(chip8) {
   return (val1 << 8) | val2;
 }
 
-/** @param {import("./chip8-core/chip8.js").Chip8} chip8 */
+/** @param {import("./chip8.js").Chip8} chip8 */
 export function cycle(chip8) {
-  var op_code = get_opcode(chip8);
+  var op_code = get_current_opcode(chip8);
   handle_instruction(chip8, op_code);
   chip8.cycle_count++;
 }
 
-/** @param {import("./chip8-core/chip8.js").Chip8} chip8 */
+/** @param {import("./chip8.js").Chip8} chip8 */
 export function decrement_timers(chip8) {
   chip8.sound_timer.set(clamp(chip8.sound_timer.get() - 1, 0, 0xff));
   chip8.delay_timer.set(clamp(chip8.delay_timer.get() - 1, 0, 0xff));
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * @param {number} address u12
  * */
 function stack_push(chip8, address) {
@@ -54,7 +51,7 @@ function stack_push(chip8, address) {
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * @returns {number} address
  * */
 function stack_pop(chip8) {
@@ -65,7 +62,7 @@ function stack_pop(chip8) {
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * */
 function advance(chip8) {
   const new_address = chip8.program_counter.get() + 2;
@@ -74,7 +71,7 @@ function advance(chip8) {
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * */
 function skip(chip8) {
   const new_address = chip8.program_counter.get() + 4;
@@ -83,7 +80,7 @@ function skip(chip8) {
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * @param {number} base_x
  * @param {number} base_y
  * @param {number} sprite_index
@@ -132,13 +129,13 @@ function draw(chip8, base_x, base_y, sprite_index, sprite_height, should_clip) {
 }
 
 /**
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("./chip8.js").Chip8} chip8
  * @param {number} opcode
  * @param {()=>number} rnd_fn
  * */
 export function handle_instruction(chip8, opcode, rnd_fn = random_u8) {
   assert_u16(opcode);
-  const opcode_enum = parse_opcode(opcode);
+  const opcode_enum = decode_opcode(opcode);
   switch (opcode_enum) {
     case OP_CODES.SYS:
       advance(chip8); // no-op

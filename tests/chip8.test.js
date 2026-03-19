@@ -4,7 +4,6 @@ import {
   assert,
   assert_equal,
   assert_program_counter,
-  assert_register_index,
   assert_u16_equal_hex,
   assert_u8_equal_binary,
   assert_u8_equal_hex,
@@ -14,8 +13,11 @@ import {
   BYTES_PER_ROW,
   CHIP_8_QUIRKS,
 } from "../chip8-core/chip8.js";
-import { OP_CODES } from "../opcode_parser.js";
-import { get_opcode, handle_instruction } from "../operations.js";
+import { OP_CODES } from "../chip8-core/OP_CODES.js";
+import {
+  get_current_opcode,
+  handle_instruction,
+} from "../chip8-core/operations.js";
 import { random_u8 } from "../utils/utils.js";
 
 export function ADD_ShouldHaveDesiredffect() {
@@ -548,6 +550,6 @@ export function get_opcode_should_return_u16_at_pc() {
   chip8.program_counter.set(0x004);
   chip8.memory[0x004] = 0xab;
   chip8.memory[0x005] = 0xcd;
-  var opcode = get_opcode(chip8);
+  var opcode = get_current_opcode(chip8);
   assert_u16_equal_hex(opcode, 0xabcd);
 }

@@ -4,21 +4,21 @@ import {
   assert_instanceof,
   assert_int_in_range,
   assert_u16,
-} from "./utils/assert.js";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "./chip8-core/chip8.js";
+} from "../utils/assert.js";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../chip8-core/chip8.js";
 import {
   formatOpcodeEnum,
-  OPCODE_INFO,
-  parse_opcode,
-} from "./opcode_parser.js";
-import { get_opcode } from "./operations.js";
+  OPCODE_METADATA,
+  decode_opcode,
+} from "../chip8-core/opcode_parser.js";
+import { get_current_opcode } from "../chip8-core/operations.js";
 import { init_sound_chip, sound_off, sound_on } from "./sound_chip.js";
 import {
   buildU16,
   formatU16Hex,
   formatU8Binary,
   formatU8Hex,
-} from "./utils/utils.js";
+} from "../utils/utils.js";
 
 const PIXEL_COUNT = SCREEN_WIDTH * SCREEN_HEIGHT;
 const FRAME_BUDGET_MS = 10;
@@ -83,7 +83,7 @@ export function handle_keydown(current_keyboard_state, key_number) {
 
 /**
  * @param {object} keymap
- * @returns {[import("./utils/utils.js").U16, ()=>void]}*/
+ * @returns {[import("../utils/utils.js").U16, ()=>void]}*/
 export function init_keyboard(keymap = STANDARD_KEYMAP) {
   const keyboard_state = buildU16();
 
@@ -142,7 +142,7 @@ export function init_keyboard(keymap = STANDARD_KEYMAP) {
  * @property {HTMLTableRowElement} delay_timer_row
  * @property {Uint8Array} previousFrame
  * @property {import("./sound_chip.js").SoundChip} sound_chip
- * @property {import("./utils/utils.js").U16} keyboard
+ * @property {import("../utils/utils.js").U16} keyboard
  * @property {()=>void} keyboard_cleanup
  */
 
@@ -262,7 +262,7 @@ function update_row_3(row, value) {
 
 /**
  * @param {UI} ui
- * @param {import("./chip8-core/chip8.js").Chip8} chip8
+ * @param {import("../chip8-core/chip8.js").Chip8} chip8
  */
 export function update_ui(chip8, ui) {
   const timestamp = performance.now();
@@ -306,15 +306,15 @@ export function update_ui(chip8, ui) {
     ui.instructionTableEl.querySelector("tbody")
   );
   assert_instanceof(instructionBody, HTMLElement);
-  const opcode = get_opcode(chip8);
-  const opcode_enum = parse_opcode(opcode);
+  const opcode = get_current_opcode(chip8);
+  const opcode_enum = decode_opcode(opcode);
   instructionBody.children[0].children[0].innerText =
     formatOpcodeEnum(opcode_enum);
   instructionBody.children[1].children[0].innerText = formatU16Hex(opcode);
   instructionBody.children[2].children[0].innerText =
-    OPCODE_INFO[opcode_enum]?.pattern ?? "UNKN";
+    OPCODE_METADATA[opcode_enum]?.pattern ?? "UNKN";
   instructionBody.children[3].children[0].innerText =
-    OPCODE_INFO[opcode_enum]?.description.slice(0, 16) ?? "unknown";
+    OPCODE_METADATA[opcode_enum]?.description.slice(0, 16) ?? "unknown";
 
   // HANDLE SCREEN
   const cells = ui.chip8ScreenEl.children;
@@ -359,7 +359,7 @@ export function format_program(rom, base_address, offset = 0) {
       const val1 = rom[index + offset];
       const val2 = rom[index + offset + 1];
       const opcode = (val1 << 8) | val2;
-      const opcode_enum = parse_opcode(opcode);
+      const opcode_enum = decode_opcode(opcode);
       ops.push(
         `${opcode.toString(16).padStart(4, "0").toUpperCase()} ${formatOpcodeEnum(opcode_enum).padEnd(8)}`,
       );

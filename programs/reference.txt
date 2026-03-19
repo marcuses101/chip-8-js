@@ -1,0 +1,64 @@
+# --- System ---
+# 0NNN - SYS addr     ; (deprecated) ignored
+# 00E0 - CLS          ; Clear display
+# 00EE - RET          ; Return from subroutine
+
+# --- Flow control ---
+# 1NNN - JP addr      ; Jump to NNN
+# 2NNN - CALL addr    ; Call subroutine at NNN
+# BNNN - JP2 addr     ; Jump to NNN + V0
+
+# --- Conditionals ---
+# 3XKK - SE Vx, byte  ; Skip if Vx == KK
+# 4XKK - SNE Vx, byte ; Skip if Vx != KK
+# 5XY0 - SE2 Vx, Vy   ; Skip if Vx == Vy
+# 9XY0 - SNE2 Vx, Vy  ; Skip if Vx != Vy
+
+# --- Register / Immediate ---
+# 6XKK - LD Vx, byte  ; Vx = KK
+# 7XKK - ADD Vx, byte ; Vx += KK
+
+# --- Register Ops ---
+# 8XY0 - LD2 Vx, Vy   ; Vx = Vy
+# 8XY1 - OR Vx, Vy    ; Vx |= Vy
+# 8XY2 - AND Vx, Vy   ; Vx &= Vy
+# 8XY3 - XOR Vx, Vy   ; Vx ^= Vy
+# 8XY4 - ADD2 Vx, Vy  ; Vx += Vy, VF = carry
+# 8XY5 - SUB Vx, Vy   ; Vx -= Vy, VF = !borrow
+# 8XY6 - SHR Vx       ; Vx >>= 1, VF = LSB
+# 8XY7 - SUBN Vx, Vy  ; Vx = Vy - Vx, VF = !borrow
+# 8XYE - SHL Vx       ; Vx <<= 1, VF = MSB
+
+# --- Index register ---
+# ANNN - LD3 addr     ; I = NNN
+# FX1E - ADD3 Vx      ; I += Vx
+
+# --- Random ---
+# CXKK - RND Vx, byte ; Vx = rand() & KK
+
+# --- Display ---
+# DXYN - DRW Vx, Vy, n
+#        Draw N-byte sprite at (Vx, Vy) from memory[I]
+#        XOR pixels, VF = collision, wraps around
+
+# --- Input ---
+# EX9E - SKP Vx       ; Skip if key Vx pressed
+# EXA1 - SKNP Vx      ; Skip if key Vx not pressed
+
+# --- Timers ---
+# FX07 - LD4 Vx       ; Vx = delay timer
+# FX15 - LD6 Vx       ; delay timer = Vx
+# FX18 - LD7 Vx       ; sound timer = Vx
+
+# --- Blocking input ---
+# FX0A - LD5 Vx       ; Wait for key press → Vx
+
+# --- Memory ---
+# FX55 - LD8 Vx       ; Store V0..Vx into memory[I..I+X]
+# FX65 - LD9 Vx       ; Load V0..Vx from memory[I..I+X]
+
+# --- Misc ---
+# FX33 - BCD Vx       ; Store BCD(Vx) at [I], [I+1], [I+2]
+# FX29 - SPR Vx       ; I = location of sprite for digit Vx
+
+

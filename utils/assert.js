@@ -59,9 +59,13 @@ export function assert_u8_equal_hex(a, b) {
 /**
  * @param {any} a
  * @param {any} b
+ * @param {string} optional_message
  * */
-export function assert_u16_equal_hex(a, b) {
-  const message = `Expected ${formatU16Hex(a)} === ${formatU16Hex(b)}`;
+export function assert_u16_equal_hex(a, b, optional_message = "") {
+  let message = `Expected ${formatU16Hex(a)} === ${formatU16Hex(b)}`;
+  if (optional_message) {
+    message += `; ${optional_message}`;
+  }
   assert(a === b, message);
 }
 
@@ -133,8 +137,12 @@ export function assert_register_index(num) {
 export function assert_u8(num) {
   assert_int_in_range(num, 0, 0xff);
 }
+/** @param {any} num */
+export function assert_nibble(num) {
+  assert_int_in_range(num, 0, 0xf);
+}
 
-/** @param {number} num */
+/** @param {any} num */
 export function assert_u16(num) {
   assert_int_in_range(num, 0, 0xffff);
 }
@@ -153,12 +161,15 @@ export function assert_instanceof(el, class_def) {
 }
 
 /**
- * @param {import("../assembler/tokenizer.js").Token} token_a
+ * @param {import("../assembler/tokenizer.js").Token | undefined} token_a
  * @param {import("../assembler/tokenizer.js").Token} token_b
  */
 export function assert_token_equal(token_a, token_b) {
+  if (typeof token_a === "undefined") {
+    throw new Error("token undefined");
+  }
   assert_equal(token_a.start, token_b.start);
   assert_equal(token_a.end, token_b.end);
   assert_equal(token_a.token_type, token_b.token_type);
-  assert_equal(token_a.value, token_b.value);
+  assert_equal(token_a.number_value, token_b.number_value);
 }

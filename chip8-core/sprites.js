@@ -20,6 +20,10 @@ export const SPRITES = [
   Uint8Array.fromHex("F080F08080"),
 ];
 
+export const HAPPY_FACE = /**@type {Uint8Array} */ (
+  Uint8Array.fromHex("3C4281A581A599423C")
+);
+
 const SPRITES_BASE_ADDRESS = 0x000;
 const BYTES_PER_SPRITE = 5;
 

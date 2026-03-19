@@ -1,10 +1,11 @@
 // @ts-check
-import { assert, assert_address, assert_instanceof } from "./assert.js";
-import { buildChip8 } from "./chip8.js";
-import { cycle, decrement_timers } from "./operations.js";
-import { load_font } from "./sprites.js";
-import { runTests } from "./test.js";
-import { display_program, init_browser_ui, update_ui } from "./ui.js";
+import { assemble_from_string } from "./assembler/assembler.js";
+import { buildChip8 } from "./chip8-core/chip8.js";
+import { cycle, decrement_timers } from "./chip8-core/operations.js";
+import { load_font } from "./chip8-core/sprites.js";
+import { runTests } from "./tests/test.js";
+import { display_program, init_browser_ui, update_ui } from "./ui/ui.js";
+import { assert, assert_address, assert_instanceof } from "./utils/assert.js";
 
 const CYCLES_HZ = 700;
 const CYCLE_MS = 1000 / CYCLES_HZ;
@@ -22,7 +23,7 @@ const CYCLES_PER_TIMER = Math.floor(CYCLES_HZ / TIMER_HZ);
 - [x] Controls?
 */
 
-/** @param {import("./chip8.js").Chip8} chip8
+/** @param {import("./chip8-core/chip8.js").Chip8} chip8
  * @param {Uint8Array} program
  * @param {number} base_address
  * */
@@ -39,7 +40,7 @@ function load_program(chip8, program, base_address = 0x200) {
   chip8.program_counter.set(base_address);
 }
 
-/** @param {import("./chip8.js").Chip8} chip8
+/** @param {import("./chip8-core/chip8.js").Chip8} chip8
  * @param {import("./ui.js").UI} ui
  * */
 function handle_keyboard(chip8, ui) {
@@ -48,6 +49,7 @@ function handle_keyboard(chip8, ui) {
 }
 
 const PROGRAM_PATHS = {
+  example_assembly: "./programs/test.asm",
   octo9: "./programs/9.ch8",
   maze: "./programs/maze.ch8",
   oneD: "./programs/1dcell.ch8",
@@ -78,9 +80,24 @@ async function fetch_program(program_id) {
   if (!res.ok) {
     return null;
   }
-  const buffer = await res.arrayBuffer();
-  const program = new Uint8Array(buffer);
-  return program;
+  const extension = path.split(".").at(-1);
+  switch (extension) {
+    case "ch8": {
+      const buffer = await res.arrayBuffer();
+      const program = new Uint8Array(buffer);
+      return program;
+    }
+    case "asm": {
+      const source = await res.text();
+      const program = assemble_from_string(source);
+      return program;
+    }
+    default: {
+      throw new Error(
+        `unsupported extenstion .${extension}. Expected ".asm" or ".ch8"`,
+      );
+    }
+  }
 }
 
 /**
@@ -94,7 +111,7 @@ async function main() {
   runTests();
   let chip8 = buildChip8();
   load_font(chip8);
-  let program = await fetch_program("rockPaperScissor");
+  let program = await fetch_program("example_assembly");
   if (!program) {
     throw new Error("Failed to load. See previous logs for error");
   }
@@ -110,8 +127,8 @@ async function main() {
   assert_instanceof(program_form, HTMLFormElement);
   program_form?.addEventListener("submit", async (e) => {
     pause();
-    const rom = /** @type {string} */ (e.submitter.value);
-    assert(rom !== null, "rom value not found");
+    const rom = /** @type {string} */ (e?.submitter?.value);
+    assert(typeof rom === "string", "rom value not found");
     chip8 = buildChip8();
     load_font(chip8);
     program = await fetch_program(rom);
@@ -184,6 +201,7 @@ async function main() {
   document.getElementById("control-reset").addEventListener("click", reset);
 
   play();
+  pause();
 }
 
 main();

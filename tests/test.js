@@ -1,9 +1,9 @@
 //@ts-check
-import * as CHIP8_TESTS from "./tests/chip8.test.js";
-import * as KEYBOARD_TESTS from "./tests/keyboard.test.js";
-import * as PARSER_TESTS from "./tests/opcode_parser.test.js";
-import * as TOKENIZER_TESTS from "./tests/tokenizer.test.js";
-import * as ASSEMBLER_TESTS from "./tests/assembler.test.js";
+import * as CHIP8_TESTS from "./chip8.test.js";
+import * as KEYBOARD_TESTS from "./keyboard.test.js";
+import * as PARSER_TESTS from "./opcode_parser.test.js";
+import * as TOKENIZER_TESTS from "../assembler/tokenizer.test.js";
+import * as ASSEMBLER_TESTS from "../assembler/assembler.test.js";
 
 const test_modules = {
   KEYBOARD_TESTS,

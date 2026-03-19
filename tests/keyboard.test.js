@@ -1,6 +1,6 @@
 //@ts-check
 import { assert_u16_equal_binary } from "../utils/assert.js";
-import { handle_keydown, handle_keyup } from "../ui.js";
+import { handle_keydown, handle_keyup } from "../ui/ui.js";
 
 export function handles_keyup_properly() {
   let keyboard_state = 0b1111_1111_1111_1111;

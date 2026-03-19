@@ -1,7 +1,12 @@
-import { assert_equal } from "../utils/assert.js";
-import { OP_CODES, parse_opcode, formatOpcodeEnum } from "../opcode_parser.js";
-
 //@ts-check
+//
+import {
+  decode_opcode,
+  formatOpcodeEnum,
+} from "../chip8-core/opcode_parser.js";
+import { OP_CODES } from "../chip8-core/OP_CODES.js";
+import { assert_equal } from "../utils/assert.js";
+
 export function opcodes_ShouldParseAsExpected() {
   // TODO: add other opcodes
   const test_data = [
@@ -21,7 +26,7 @@ export function opcodes_ShouldParseAsExpected() {
   ];
   const failed = [];
   test_data.forEach(([input, expected_output]) => {
-    const parsed = parse_opcode(input);
+    const parsed = decode_opcode(input);
     if (parsed !== expected_output) {
       failed.push([input, expected_output, parsed]);
       console.log(

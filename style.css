@@ -172,7 +172,6 @@
       text-align: right;
       text-overflow: ellipsis;
       text-wrap: nowrap;
-      max-width: 16ch;
     }
 
     table thead th {
