@@ -13,9 +13,6 @@ import {
 import { formatU16Hex, pack_nibbles_u16, unpack_u16 } from "../utils/utils.js";
 import { build_tokenizer_state, tokenizer } from "./tokenizer.js";
 
-const PLACEHOLDER_CALL_OPCODE = 0x2000;
-const PLACEHOLDER_JP_OPCODE = 0x1000;
-
 /**
  * @typedef OpcodeStream
  * @type {Generator<number, void, unknown>}
@@ -194,11 +191,6 @@ function handle_instruction_LD(state) {
           const y = consume_vreg(state);
           return pack_nibbles_u16(8, x, y, 0);
         }
-        case "I": {
-          consume(state, "I");
-          const address = handle_address_token(state);
-          return (0xa << 12) | address;
-        }
         case "DT": {
           consume(state, "DT");
           return pack_nibbles_u16(0xf, x, 0, 7);
@@ -218,17 +210,23 @@ function handle_instruction_LD(state) {
         }
       }
     }
+    case "I": {
+      consume(state, "I");
+      consume(state, "COMMA");
+      const address = handle_address_token(state);
+      return (0xa << 12) | address;
+    }
     case "DT": {
       consume(state, "DT");
       consume(state, "COMMA");
       const x = consume_vreg(state);
-      return pack_nibbles_u16(0xf, x, 1, 6);
+      return pack_nibbles_u16(0xf, x, 1, 5);
     }
     case "ST": {
       consume(state, "ST");
       consume(state, "COMMA");
       const x = consume_vreg(state);
-      return pack_nibbles_u16(0xf, x, 1, 6);
+      return pack_nibbles_u16(0xf, x, 1, 8);
     }
     case "LEFT_BRACE": {
       consume(state, "LEFT_BRACE");
@@ -367,7 +365,6 @@ function handle_instruction_line(state, current_token) {
     case "INSTR_RND":
       {
         OP_CODES.RND;
-        debugger;
         const x = consume_vreg(state);
         consume(state, "COMMA");
         const number_token = consume(state, "NUMBER_LITERAL");
@@ -491,11 +488,34 @@ export function* assembler(state) {
       // make label
       continue;
     }
+    if (current_token.token_type === "DIRECT_BYTE") {
+      const number_token = consume(state, "NUMBER_LITERAL");
+      const val = number_token.number_value;
+      assert_u8(val);
+      let output_u16 = val << 8;
+      consume_newline(state);
+      if (peek(state).token_type === "DIRECT_BYTE") {
+        consume(state, "DIRECT_BYTE");
+        const number_token = consume(state, "NUMBER_LITERAL");
+        const val = number_token.number_value;
+        assert_u8(val);
+        output_u16 |= val;
+      }
+      state.opcode_count++;
+      yield output_u16;
+      continue;
+    }
     yield handle_instruction_line(state, current_token);
   }
 }
 
 const PROGRAM_MAX = 0xfff - 0x200;
+
+const PLACEHOLDER_BYTES = [
+  0x1000, // JP
+  0x2000, // CALL
+  0xa000, // LD I
+];
 
 /** @param {AssemberState} state
  * @param {number[]} opcodes
@@ -504,13 +524,10 @@ const PROGRAM_MAX = 0xfff - 0x200;
 function resolve_labels(state, opcodes, base_address = 0x200) {
   state.patch_locations.forEach((label, index) => {
     const currentOpcode = opcodes[index];
-    if (
-      currentOpcode != PLACEHOLDER_JP_OPCODE &&
-      currentOpcode != PLACEHOLDER_CALL_OPCODE
-    ) {
+    if (!PLACEHOLDER_BYTES.includes(currentOpcode)) {
       throw new Error(
-        `Unexpected opcode ${formatU16Hex(currentOpcode)}. 
-           Expected ${formatU16Hex(PLACEHOLDER_JP_OPCODE)} or ${formatU16Hex(PLACEHOLDER_CALL_OPCODE)}
+        `Unexpected opcode ${formatU16Hex(currentOpcode)}.
+          Expected: ${PLACEHOLDER_BYTES.map(formatU16Hex).join(", ")}
     `,
       );
     }

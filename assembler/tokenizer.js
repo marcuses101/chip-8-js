@@ -25,7 +25,7 @@ import {
  */
 
 /** @typedef TokenType
- * @type {InstructionToken | RegisterToken | "NEWLINE" | "COMMA" | "EOF" | "NUMBER_LITERAL" | "IDENT" | "RIGHT_BRACE" | "LEFT_BRACE" | "COLON" | "READ_K" }
+ * @type {InstructionToken | RegisterToken | "NEWLINE" | "COMMA" | "EOF" | "NUMBER_LITERAL" | "IDENT" | "RIGHT_BRACE" | "LEFT_BRACE" | "COLON" | "READ_K" | "DIRECT_BYTE" }
  */
 
 /**
@@ -323,6 +323,9 @@ function determine_keyword(state, buffer) {
     }
     case "CLS": {
       return make_token(state, "INSTR_CLS");
+    }
+    case "DB": {
+      return make_token(state, "DIRECT_BYTE");
     }
     case "DRW": {
       return make_token(state, "INSTR_DRW");

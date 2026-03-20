@@ -25,6 +25,16 @@ export function get_current_opcode(chip8) {
   return (val1 << 8) | val2;
 }
 
+/**
+ * @param {import("./chip8.js").Chip8} chip8
+ * @param {number} num
+ * */
+export function handle_keyboard_input(chip8, num) {
+  assert_u16(num);
+  chip8.previous_keyboard.set(chip8.keyboard.get());
+  chip8.keyboard.set(num);
+}
+
 /** @param {import("./chip8.js").Chip8} chip8 */
 export function cycle(chip8) {
   var op_code = get_current_opcode(chip8);
@@ -421,7 +431,7 @@ export function handle_instruction(chip8, opcode, rnd_fn = random_u8) {
       {
         if (
           chip8.quirk_options.display_wait &&
-          chip8.cycle_count % Math.floor(700 / 60) !== 0
+          chip8.cycle_count % Math.ceil(700 / 60) !== 0
         ) {
           break;
         }
