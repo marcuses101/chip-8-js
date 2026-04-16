@@ -3,6 +3,7 @@ import { buildU16, buildU8 } from "../utils/utils.js";
 
 export const SCREEN_WIDTH = 64;
 export const SCREEN_HEIGHT = 32;
+export const PIXEL_COUNT = SCREEN_WIDTH * SCREEN_HEIGHT;
 export const BYTES_PER_ROW = 8;
 
 export const CHIP_8_QUIRKS = {

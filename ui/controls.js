@@ -1,3 +1,8 @@
+//@ts-check
+
+import { PROGRAM_PATHS } from "../programs/program-loader.js";
+import { assert, assert_instanceof } from "../utils/assert.js";
+
 /**
  * @param {()=>void} onPlayClick
  * @param {()=>void} onPauseClick

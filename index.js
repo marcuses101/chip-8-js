@@ -30,6 +30,7 @@ async function main() {
   const program = await fetch_program("maze");
   load_program(emulator, program);
   display_program(browser_ui, program);
+  emulator.ui_callback(emulator.chip8);
   setup_controls(
     () => {
       play(emulator);
@@ -48,6 +49,7 @@ async function main() {
         /** @type {import("./programs/program-loader.js").ProgramId} */ (id),
       );
       load_program(emulator, program);
+      emulator.ui_callback(emulator.chip8);
       display_program(browser_ui, program);
     },
   );

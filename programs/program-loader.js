@@ -3,7 +3,7 @@
 import { assemble_from_string } from "../assembler/assembler.js";
 import { assert } from "../utils/assert.js";
 
-const PROGRAM_PATHS = {
+export const PROGRAM_PATHS = {
   move_test: "./programs/move_test.asm",
   example_assembly: "./programs/test.asm",
   octo9: "./programs/9.ch8",

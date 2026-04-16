@@ -6,7 +6,6 @@ import {
   handle_keyboard_input,
 } from "./chip8-core/operations.js";
 import { load_font } from "./chip8-core/sprites.js";
-import { display_program } from "./ui/ui.js";
 import { assert_address } from "./utils/assert.js";
 
 const CYCLES_HZ = 700;
@@ -59,17 +58,11 @@ export function build_emulator(ui_callback, keyboard_callback, req_frame) {
  * @param {number} timestamp
  * */
 function loop(emulator, timestamp) {
-  /** @type {FrameRequestCallback} */
-  const loop_callback = (new_timestamp) => {
-    loop(emulator, new_timestamp);
-  };
   if (!emulator.is_playing) {
     return;
   }
   if (emulator.timestamp === null) {
     emulator.timestamp = timestamp;
-    emulator.req_frame(loop_callback);
-    return;
   }
   const new_timestamp = timestamp;
   let delta = new_timestamp - emulator.timestamp;
@@ -83,6 +76,11 @@ function loop(emulator, timestamp) {
     cycle(emulator.chip8);
   }
   emulator.ui_callback(emulator.chip8);
+
+  /** @type {FrameRequestCallback} */
+  const loop_callback = (new_timestamp) => {
+    loop(emulator, new_timestamp);
+  };
   emulator.req_frame(loop_callback);
 }
 
@@ -106,6 +104,7 @@ export function step(emulator) {
   if (emulator.chip8.cycle_count % CYCLES_PER_TIMER === 0) {
     decrement_timers(emulator.chip8);
   }
+  pause(emulator);
   cycle(emulator.chip8);
   emulator.ui_callback(emulator.chip8);
 }

@@ -5,11 +5,11 @@ LD V5, 1
 
 LD ST, V9
 
-LD I, happy
-DRW V1, V1, 6
 
 LD V2, 0xF
 CALL loopDraw
+LD I, gChar
+CALL drawSprite
 
 
 LD V5, K # pause execution
@@ -47,5 +47,11 @@ happy:
     DB 0b10000001
     DB 0b01111110
 
+gChar:
+    DB 0b11110000
+    DB 0b10000000
+    DB 0b10110000
+    DB 0b10010000
+    DB 0b11110000
 
   

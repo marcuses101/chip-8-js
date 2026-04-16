@@ -8,16 +8,16 @@ export const SPRITES = [
   Uint8Array.fromHex("F010F010F0"), // 3
   Uint8Array.fromHex("9090F01010"), // 4
   Uint8Array.fromHex("F080F010F0"), // 5
-  Uint8Array.fromHex("F080F090F0"), // .
-  Uint8Array.fromHex("F010101010"), // .
-  Uint8Array.fromHex("F090F090F0"), // .
-  Uint8Array.fromHex("F090F01010"),
-  Uint8Array.fromHex("F090F09090"),
-  Uint8Array.fromHex("F090F090F0"),
-  Uint8Array.fromHex("F0808080F0"),
-  Uint8Array.fromHex("E0909090E0"),
-  Uint8Array.fromHex("F080F080F0"),
-  Uint8Array.fromHex("F080F08080"),
+  Uint8Array.fromHex("F080F090F0"), // 6
+  Uint8Array.fromHex("F010101010"), // 7
+  Uint8Array.fromHex("F090F090F0"), // 8
+  Uint8Array.fromHex("F090F01010"), // 9
+  Uint8Array.fromHex("F090F09090"), // A
+  Uint8Array.fromHex("F090F090F0"), // B
+  Uint8Array.fromHex("F0808080F0"), // C
+  Uint8Array.fromHex("E0909090E0"), // D
+  Uint8Array.fromHex("F080F080F0"), // E
+  Uint8Array.fromHex("F080F08080"), // F
 ];
 
 export const HAPPY_FACE = /**@type {Uint8Array} */ (

@@ -25,7 +25,7 @@
         </form>
     </dialog>
     <main id="layout">
-    <div id="screen"></div>
+    <div id="screen" class="gradient"></div>
     <div id="controls">
         <button command="show-modal" commandfor="rom-loader">LOAD</button>
         <button id="control-play">PLAY</button>
@@ -37,9 +37,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>Reg</th>
-                    <th>Hex</th>
-                    <th>Dec</th>
+                    <th class="reg-col">Reg</th>
+                    <th class="hex-col">Hex</th>
+                    <th class="dec-col">Dec</th>
                 </tr>
             </thead>
             <tbody>
@@ -70,10 +70,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Reg</th>
-                    <th>Binary</th>
-                    <th>Hex</th>
-                    <th>Dec</th>
+                    <th class="reg-col">Reg</th>
+                    <th class="bin-col">Binary</th>
+                    <th class="hex-col">Hex</th>
+                    <th class="dec-col">Dec</th>
                 </tr>
             </thead>
             <tbody>
@@ -185,9 +185,14 @@
                 <tr><td>UNK</td></tr>
                 <tr><td>0x0000</td></tr>
                 <tr><td>0NNN</td></tr>
-                <tr><td>&nbsp</td></tr>
+                <tr>
+                    <td aria-describedby="instruction-tooltip">&nbsp</td>
+                </tr>
             </tbody>
         </table>
+        <div role="tooltip" id="instruction-tooltip">
+            <p id="instruction-tootip-content"></p>
+        </div>
     </div>
     <div id="stack">
         <table>
