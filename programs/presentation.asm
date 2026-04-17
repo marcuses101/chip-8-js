@@ -249,7 +249,6 @@ slides:
     DB 029 # 'T'
     DB 024 # 'O'
     DB 027 # 'R'
-    DB 036 # '\n'
     DB 038 # 'next slide'
     DB 032 # 'W'
     DB 017 # 'H'

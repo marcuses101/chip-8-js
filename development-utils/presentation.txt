@@ -33,7 +33,7 @@ STR8 JS
 NO DEPS
 NO BUILD
 # JSDoc provides type safety
-# Handrolled testing suite 
+# Hand rolled testing suite 
 # Asserts everywhere in the codebase to catch bugs early
 ---
 VM
@@ -43,6 +43,7 @@ Emulation
 Web App
 # Controls for loading roms and controlling the emulator
 # Built in tokenizer/assembler so we can support both raw bin and assembly input
+# requestAnimationFrame for handling driving the emulation loop and rendering
 ---
 Key
 Takeaways
