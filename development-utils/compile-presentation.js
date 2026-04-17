@@ -1,6 +1,6 @@
 // @ts-check
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { argv } from "node:process";
 import { assert_int_in_range } from "../utils/assert.js";
 import { is_alpha, is_digit } from "../utils/utils.js";
@@ -33,7 +33,7 @@ function translate(input) {
 		assert_int_in_range(code, 0, 37);
 		const formattedCode = code.toString(10).padStart(3, "0");
 		lines.push(
-			`\tDB ${formattedCode} # '${currentChar === "\n" ? "\\n" : currentChar}'`,
+			`    DB ${formattedCode} # '${currentChar === "\n" ? "\\n" : currentChar}'`,
 		);
 	}
 	return lines.join("\n");
@@ -44,13 +44,14 @@ function main() {
 		"./programs/presentation.asm",
 		"utf-8",
 	);
-	const presentationLabel = "presentation:\n";
-	const index = presentation_assembly.indexOf(presentationLabel);
+	const slidesLabel = "slides:";
+	let index = presentation_assembly.lastIndexOf(slidesLabel);
 	if (index === -1) {
 		throw new Error(
-			`presentation.txt must contain the label "${presentationLabel.trim()}"`,
+			`presentation.asm must contain the label "${slidesLabel.trim()}"`,
 		);
 	}
+	index = presentation_assembly.indexOf("\n", index) + 1;
 	const input = readFileSync("./development-utils/presentation.txt", "utf-8");
 	// const input = argv[2];
 	const slides = input
@@ -59,10 +60,13 @@ function main() {
 		.map((chunk) => chunk.trim())
 		.filter(Boolean);
 
-	const output = `${slides
+	const presentation_asm_bytes = `${slides
 		.map((slide) => translate(slide))
-		.join("\n\tDB 038 # 'next slide'\n")}\n\tDB 0xFF # terminator\n\n`;
-	console.log(output);
+		.join("\n    DB 038 # 'next slide'\n")}\n    DB 0xFF # terminator\n\n`;
+
+	const output = `${presentation_assembly.slice(0, index)}${presentation_asm_bytes}`;
+	writeFileSync("./programs/presentation.asm", output);
+	console.log("presentation.asm updated");
 }
 
 main();
