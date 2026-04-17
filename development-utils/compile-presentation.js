@@ -1,4 +1,6 @@
 // @ts-check
+
+import { readFileSync } from "node:fs";
 import { argv } from "node:process";
 import { assert_int_in_range } from "../utils/assert.js";
 import { is_alpha, is_digit } from "../utils/utils.js";
@@ -38,16 +40,28 @@ function translate(input) {
 }
 
 function main() {
-	const input = argv[2];
+	const presentation_assembly = readFileSync(
+		"./programs/presentation.asm",
+		"utf-8",
+	);
+	const presentationLabel = "presentation:\n";
+	const index = presentation_assembly.indexOf(presentationLabel);
+	if (index === -1) {
+		throw new Error(
+			`presentation.txt must contain the label "${presentationLabel.trim()}"`,
+		);
+	}
+	const input = readFileSync("./development-utils/presentation.txt", "utf-8");
+	// const input = argv[2];
 	const slides = input
 		.trim()
 		.split("---")
 		.map((chunk) => chunk.trim())
 		.filter(Boolean);
 
-	const output = slides
+	const output = `${slides
 		.map((slide) => translate(slide))
-		.join("\n\tDB 038 # 'next slide'\n");
+		.join("\n\tDB 038 # 'next slide'\n")}\n\tDB 0xFF # terminator\n\n`;
 	console.log(output);
 }
 

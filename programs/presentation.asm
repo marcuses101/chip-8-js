@@ -3,18 +3,38 @@
 # VC - text offset
 # V8, V9 - math stuff
 
-CALL main
-
-main: 
-    LD I, text
-    CALL printString
+    LD I, slides
+    CALL presentation
     CALL spinLoop
 
-printString:
+nextSlide:
+    LD VD, K
+    CLS
+    LD VA, 0
+    LD VB, 0
+    JP increment
+putSpace:
+    ADD VA, 2
+    CALL checkNewLine
+    JP increment
+putNewLine:
+    CALL newLine
+    JP increment
+
+presentation:
     # get the value at the address
     LD V0, [I]
     SNE V0, 0xFF # treating as string terminator
     RET
+    # If we hit a "next slide" clear screen and go to increment
+    SNE V0, 038
+    JP nextSlide
+    SNE V0, 37
+    JP putSpace
+    SNE V0, 036
+    JP putNewLine
+
+drawChar:
     # map to the sprite
     # first check if in normal sprite range
     LD V8, V0  
@@ -40,10 +60,11 @@ seekChar:
     JP seekChar
 drawEnd:
     CALL putChar
+increment:
     ADD VC, 1
-    LD I, text
+    LD I, slides
     ADD I, VC
-    JP printString
+    JP presentation
     RET
 
 spinLoop:
@@ -90,6 +111,13 @@ alphabet:
     DB 0b01000000
     DB 0b01000000
     DB 0b01000000
+    DB 0b11100000
+    DB 0b00000000
+    # J
+    DB 0b11110000
+    DB 0b00100000
+    DB 0b00100000
+    DB 0b10100000
     DB 0b11100000
     DB 0b00000000
     # K
@@ -206,3 +234,133 @@ alphabet:
     DB 0b00000000
 
 slides:
+        DB 012 # 'C'
+        DB 017 # 'H'
+        DB 018 # 'I'
+        DB 025 # 'P'
+        DB 037 # ' '
+        DB 008 # '8'
+        DB 036 # '\n'
+        DB 014 # 'E'
+        DB 022 # 'M'
+        DB 030 # 'U'
+        DB 021 # 'L'
+        DB 010 # 'A'
+        DB 029 # 'T'
+        DB 024 # 'O'
+        DB 027 # 'R'
+        DB 038 # 'next slide'
+        DB 032 # 'W'
+        DB 017 # 'H'
+        DB 034 # 'Y'
+        DB 038 # 'next slide'
+        DB 032 # 'W'
+        DB 017 # 'H'
+        DB 010 # 'A'
+        DB 029 # 'T'
+        DB 037 # ' '
+        DB 018 # 'I'
+        DB 028 # 'S'
+        DB 037 # ' '
+        DB 018 # 'I'
+        DB 029 # 'T'
+        DB 038 # 'next slide'
+        DB 018 # 'I'
+        DB 022 # 'M'
+        DB 025 # 'P'
+        DB 021 # 'L'
+        DB 038 # 'next slide'
+        DB 028 # 'S'
+        DB 029 # 'T'
+        DB 027 # 'R'
+        DB 008 # '8'
+        DB 037 # ' '
+        DB 019 # 'J'
+        DB 028 # 'S'
+        DB 036 # '\n'
+        DB 033 # 'X'
+        DB 037 # ' '
+        DB 021 # 'L'
+        DB 018 # 'I'
+        DB 011 # 'B'
+        DB 028 # 'S'
+        DB 037 # ' '
+        DB 036 # '\n'
+        DB 033 # 'X'
+        DB 037 # ' '
+        DB 010 # 'A'
+        DB 018 # 'I'
+        DB 037 # ' '
+        DB 036 # '\n'
+        DB 033 # 'X'
+        DB 037 # ' '
+        DB 011 # 'B'
+        DB 030 # 'U'
+        DB 018 # 'I'
+        DB 021 # 'L'
+        DB 013 # 'D'
+        DB 038 # 'next slide'
+        DB 030 # 'U'
+        DB 018 # 'I'
+        DB 023 # 'N'
+        DB 029 # 'T'
+        DB 008 # '8'
+        DB 037 # ' '
+        DB 030 # 'U'
+        DB 018 # 'I'
+        DB 023 # 'N'
+        DB 029 # 'T'
+        DB 001 # '1'
+        DB 006 # '6'
+        DB 037 # ' '
+        DB 010 # 'A'
+        DB 027 # 'R'
+        DB 027 # 'R'
+        DB 010 # 'A'
+        DB 034 # 'Y'
+        DB 036 # '\n'
+        DB 012 # 'C'
+        DB 028 # 'S'
+        DB 028 # 'S'
+        DB 037 # ' '
+        DB 016 # 'G'
+        DB 027 # 'R'
+        DB 018 # 'I'
+        DB 013 # 'D'
+        DB 036 # '\n'
+        DB 032 # 'W'
+        DB 014 # 'E'
+        DB 011 # 'B'
+        DB 037 # ' '
+        DB 010 # 'A'
+        DB 030 # 'U'
+        DB 013 # 'D'
+        DB 018 # 'I'
+        DB 024 # 'O'
+        DB 037 # ' '
+        DB 010 # 'A'
+        DB 025 # 'P'
+        DB 018 # 'I'
+        DB 038 # 'next slide'
+        DB 020 # 'K'
+        DB 014 # 'E'
+        DB 034 # 'Y'
+        DB 037 # ' '
+        DB 029 # 'T'
+        DB 010 # 'A'
+        DB 020 # 'K'
+        DB 014 # 'E'
+        DB 010 # 'A'
+        DB 032 # 'W'
+        DB 010 # 'A'
+        DB 034 # 'Y'
+        DB 028 # 'S'
+        DB 038 # 'next slide'
+        DB 029 # 'T'
+        DB 017 # 'H'
+        DB 010 # 'A'
+        DB 023 # 'N'
+        DB 020 # 'K'
+        DB 028 # 'S'
+        DB 0xFF # terminator
+

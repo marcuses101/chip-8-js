@@ -12,8 +12,6 @@ import { runTests } from "./tests/test.js";
 import { setup_controls } from "./ui/controls.js";
 import { display_program, init_browser_ui, update_ui } from "./ui/ui.js";
 
-const DEFAULT_PROGRAM = "presentation";
-
 async function main() {
 	runTests();
 	const browser_ui = init_browser_ui();
@@ -29,7 +27,7 @@ async function main() {
 	const emulator = build_emulator(ui_callback, keyboard_callback, (cb) => {
 		requestAnimationFrame(cb);
 	});
-	const program = await fetch_program(DEFAULT_PROGRAM);
+	const program = await fetch_program("presentation");
 	load_program(emulator, program);
 	display_program(browser_ui, program);
 	emulator.ui_callback(emulator.chip8);
@@ -55,7 +53,7 @@ async function main() {
 			display_program(browser_ui, program);
 		},
 	);
-	pause(emulator);
+	play(emulator);
 }
 
 main();

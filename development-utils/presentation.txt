@@ -1,3 +1,22 @@
-Chip 8 Emulation
+CHIP 8
+Emulator
 ---
 Why
+---
+what is it
+---
+Impl
+---
+STR8 JS
+X libs 
+X ai 
+X build
+---
+Uint8 ARR
+Uint16 ARR
+CSS Grid
+Web Audio Api
+---
+Key Takeaways
+---
+Thanks
