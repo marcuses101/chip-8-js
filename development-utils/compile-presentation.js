@@ -1,7 +1,5 @@
 // @ts-check
-
 import { readFileSync, writeFileSync } from "node:fs";
-import { argv } from "node:process";
 import { assert_int_in_range } from "../utils/assert.js";
 import { is_alpha, is_digit } from "../utils/utils.js";
 
@@ -15,6 +13,13 @@ function translate(input) {
 	const normalized = input.toUpperCase();
 	for (let i = 0; i < input.length; i++) {
 		const char = normalized[i];
+		if (char === "#") {
+			// consume until newline
+			while (i < input.length && normalized[i] !== "\n") {
+				i++;
+			}
+			continue;
+		}
 		if (is_digit(char)) {
 			const value = char.charCodeAt(0) - 48;
 			chars.push([char, value]);

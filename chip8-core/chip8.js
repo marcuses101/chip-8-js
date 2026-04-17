@@ -1,5 +1,5 @@
 // @ts-check
-import { buildU16, buildU8 } from "../utils/utils.js";
+import { buildU8, buildU16 } from "../utils/utils.js";
 
 export const SCREEN_WIDTH = 64;
 export const SCREEN_HEIGHT = 32;
@@ -7,12 +7,12 @@ export const PIXEL_COUNT = SCREEN_WIDTH * SCREEN_HEIGHT;
 export const BYTES_PER_ROW = 8;
 
 export const CHIP_8_QUIRKS = {
-  vf_reset: true,
-  memory: true,
-  display_wait: false,
-  clipping: true,
-  shifting: false,
-  jumping: false,
+	vf_reset: true,
+	memory: true,
+	display_wait: false,
+	clipping: true,
+	shifting: false,
+	jumping: false,
 };
 
 /**
@@ -37,20 +37,19 @@ export const CHIP_8_QUIRKS = {
  * @returns {Chip8}
  */
 export function buildChip8(quirk_options = CHIP_8_QUIRKS) {
-  const registers = new Uint8Array(16);
-  return {
-    registers,
-    index_register: buildU16(),
-    stack: new Uint16Array(16),
-    stack_pointer: buildU8(),
-    delay_timer: buildU8(),
-    sound_timer: buildU8(),
-    frame_buffer: new Uint8Array(BYTES_PER_ROW * SCREEN_HEIGHT),
-    memory: new Uint8Array(4096),
-    program_counter: buildU16(),
-    keyboard: buildU16(),
-    previous_keyboard: buildU16(),
-    cycle_count: 0,
-    quirk_options,
-  };
+	return {
+		registers: new Uint8Array(16),
+		index_register: buildU16(),
+		stack: new Uint16Array(16),
+		stack_pointer: buildU8(),
+		delay_timer: buildU8(),
+		sound_timer: buildU8(),
+		frame_buffer: new Uint8Array(BYTES_PER_ROW * SCREEN_HEIGHT),
+		memory: new Uint8Array(4096),
+		program_counter: buildU16(),
+		keyboard: buildU16(),
+		previous_keyboard: buildU16(),
+		cycle_count: 0,
+		quirk_options,
+	};
 }

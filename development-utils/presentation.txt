@@ -2,21 +2,52 @@ CHIP 8
 Emulator
 ---
 Why
+# Confoo C# Chip 8 talk by David Guida 
+# https://confoo.ca/en/2026/session/from-zero-to-emulator-chip-8-and-the-art-of-c-abstraction
+# Fun challenge
 ---
-what is it
+History
+# Originally developed for 1970 era 8 bit microcomputers
+# COSMAC VIP, Telmac 1800
+# Resurfaced in the 1990s on the HP48 calculator
+# Now considered the "Hello World" of emulation
 ---
-Impl
+VM Specs
+# 4K memory (0x000-0xFFF)
+# 16 8-bit registers (V0-VF)
+# 12-bit I register
+# 12-bit program counter
+# 60Hz sound timer and delay timer
+# Hexadecimal keypad (0-F)
+# 64*32 pixel monochrome display (256 byte framebuffer)
+# Drawing sprites with XOR and collision detection
+---
+Research
+# Hit a bunch of websites, but the top results were rarely the most useful
+# AI was super wrong about specifications
+# Specialized Chip 8 rom suite to verify implementation
+--- 
+Development
 ---
 STR8 JS
-X libs 
-X ai 
-X build
+NO DEPS
+NO BUILD
+# JSDoc provides type safety
+# Handrolled testing suite 
+# Asserts everywhere in the codebase to catch bugs early
 ---
-Uint8 ARR
-Uint16 ARR
-CSS Grid
-Web Audio Api
+VM
+Emulation
+# Uint8 and Uint16 arrays for memory and registers
 ---
-Key Takeaways
+Web App
+# Controls for loading roms and controlling the emulator
+# Built in tokenizer/assembler so we can support both raw bin and assembly input
 ---
-Thanks
+Key
+Takeaways
+# Chrome Devtools are amazing for debugging and performance analysis
+# Emulator Development Discord is full of really helpful people
+# Emulation is a great way to clarify concepts
+---
+More Demos
